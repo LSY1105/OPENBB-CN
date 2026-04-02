@@ -68,19 +68,29 @@ class StocksExtension:
         
         Args:
             symbol: 股票代码或代码列表
-            provider: 数据源 (easyquotation/akshare)
+            provider: 数据源 (easyquotation/akshare/eastmoney)
         
         Returns:
             dict 或 pd.DataFrame: 实时行情数据
         """
         provider_instance = self.openbb.get_provider(provider)
         
-        if provider == "easyquotation":
-            if isinstance(symbol, list):
+        if isinstance(symbol, list):
+            # 列表情况：使用批量接口（如果支持）
+            if hasattr(provider_instance, 'get_realtime_quotes_batch'):
                 return provider_instance.get_realtime_quotes_batch(symbol, **kwargs)
             else:
-                return provider_instance.get_realtime_quote(symbol, **kwargs)
+                # 不支持批量，逐一获取
+                results = []
+                for s in symbol:
+                    try:
+                        result = provider_instance.get_realtime_quote(s, **kwargs)
+                        results.append(result)
+                    except Exception:
+                        pass
+                return pd.DataFrame(results)
         else:
+            # 单个代码
             return provider_instance.get_realtime_quote(symbol, **kwargs)
     
     def search(

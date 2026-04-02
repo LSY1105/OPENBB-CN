@@ -6,6 +6,8 @@ Providers 模块
 from openbb_core.providers.base import BaseProvider, ProviderRouter, ProviderResponse
 from openbb_core.providers.akshare_provider import AkShareProvider
 from openbb_core.providers.easyquotation_provider import EasyQuotationProvider
+from openbb_core.providers.tushare_provider import TushareProvider
+from openbb_core.providers.eastmoney_provider import EastMoneyProvider
 
 __all__ = [
     "BaseProvider",
@@ -13,6 +15,8 @@ __all__ = [
     "ProviderResponse",
     "AkShareProvider",
     "EasyQuotationProvider",
+    "TushareProvider",
+    "EastMoneyProvider",
 ]
 
 
@@ -33,6 +37,8 @@ def get_provider(name: str, credentials=None) -> BaseProvider:
     providers = {
         "akshare": AkShareProvider,
         "easyquotation": EasyQuotationProvider,
+        "tushare": TushareProvider,
+        "eastmoney": EastMoneyProvider,
     }
     
     if name not in providers:

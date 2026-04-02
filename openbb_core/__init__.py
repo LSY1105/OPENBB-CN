@@ -7,6 +7,5 @@ __version__ = "0.1.0"
 __author__ = "OPENBB-CN Team"
 
 from openbb_core.core import OpenBB
-from openbb_core.router import Router
 
-__all__ = ["OpenBB", "Router", "__version__"]
+__all__ = ["OpenBB", "__version__"]

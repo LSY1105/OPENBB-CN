@@ -8,8 +8,11 @@ from typing import Any, Dict, Optional
 from dataclasses import dataclass
 from pathlib import Path
 
+# 版本信息
+__version__ = "0.1.0"
+
 # 默认 providers 配置
-DEFAULT_PROVIDERS = ["akshare", "easyquotation", "tushare"]
+DEFAULT_PROVIDERS = ["akshare", "easyquotation", "tushare", "eastmoney"]
 
 
 @dataclass
@@ -113,11 +116,11 @@ class OpenBB:
         Returns:
             数据源实例
         """
-        from openbb_core.extensions import get_provider
+        from openbb_core.providers import get_provider
         return get_provider(provider_name, self.credentials.get(provider_name))
     
     def __repr__(self) -> str:
-        return f"OpenBB-CN(v{__version__}, providers={self.providers})"
+        return f"OpenBB-CN(v0.1.0, providers={self.providers})"
 
 
 def main():
