@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw AI助手介绍</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden}
+.slides{width:100vw;height:100vh;position:relative}
+.slide{width:100vw;height:100vh;position:absolute;top:0;left:0;display:none;font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;overflow:hidden}
+.slide.active{display:flex;flex-direction:column}
+.bg-dark{background:#06080f;background-image:radial-gradient(ellipse at 20% 80%,rgba(0,80,150,0.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(80,0,160,0.12) 0%,transparent 60%),radial-gradient(ellipse at 50% 50%,rgba(0,20,50,0.08) 0%,transparent 80%)}
+.grid-bg{background-image:linear-gradient(rgba(30,40,60,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(30,40,60,0.3) 1px,transparent 1px);background-size:60px 60px}
+.topbar{display:flex;align-items:center;padding:28px 60px 0;gap:16px}
+.topbar-accent{width:5px;height:36px;border-radius:3px}
+.topbar h1{font-size:28px;font-weight:700;color:#fff;letter-spacing:-0.5px}
+.topbar .sub{font-size:12px;color:#4a5568;letter-spacing:3px;text-transform:uppercase;margin-left:auto}
+.pagenum{position:absolute;bottom:28px;right:60px;font-size:13px;color:#2d3748;letter-spacing:1px}
+.bottom-info{position:absolute;bottom:28px;left:60px;font-size:12px;color:#2d3748;letter-spacing:1px}
+.deco-line{height:2px;background:linear-gradient(90deg,var(--c1,#00D4FF),transparent);margin:16px 60px 0}
+.def-box{margin:24px 60px 0;padding:28px 36px;border-radius:16px;border:1px solid rgba(0,212,255,0.2);background:rgba(0,212,255,0.04);font-size:17px;color:#94a3b8;line-height:1.8}
+.tri-cards{display:flex;gap:24px;margin:28px 60px 0;flex:1;align-items:stretch}
+.tri-card{flex:1;border-radius:20px;padding:28px 24px 24px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden;transition:transform 0.3s,border-color 0.3s}
+.tri-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.15)}
+.tri-card .card-glow{position:absolute;top:0;left:0;width:100%;height:3px;border-radius:20px 20px 0 0}
+.tri-card .icon-box{width:60px;height:60px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.tri-card h3{font-size:18px;font-weight:700}
+.tri-card p{font-size:13px;color:#64748b;line-height:1.8;flex:1}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 60px 0;flex:1;align-content:start}
+.feat-card{border-radius:16px;padding:22px 24px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:12px;transition:transform 0.3s}
+.feat-card:hover{transform:translateY(-3px)}
+.feat-header{display:flex;align-items:center;gap:14px}
+.feat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.feat-title h3{font-size:16px;font-weight:700}
+.feat-title span{font-size:12px;color:#4a5568}
+.feat-points{list-style:none;display:flex;flex-direction:column;gap:8px}
+.feat-points li{font-size:13px;color:#64748b;display:flex;align-items:center;gap:8px}
+.feat-points li::before{content:"▸";font-size:10px;flex-shrink:0}
+.tl-cards{display:flex;gap:20px;margin:28px 60px 0;flex:1;align-items:stretch}
+.tl-card{flex:1;border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:10px}
+.tl-ver{display:inline-block;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:700;width:fit-content}
+.tl-date{font-size:13px;font-weight:600}
+.tl-title{font-size:18px;font-weight:700}
+.tl-items{list-style:none;display:flex;flex-direction:column;gap:6px;flex:1}
+.tl-items li{font-size:12px;color:#64748b}
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 60px 0;flex:1;align-content:start}
+.tool-card{border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:14px;transition:transform 0.3s}
+.tool-card:hover{transform:translateY(-3px)}
+.tool-header{display:flex;align-items:center;gap:16px}
+.tool-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.tool-name{font-size:15px;font-weight:700}
+.tool-desc{font-size:12px;color:#94a3b8}
+.tool-lines{list-style:none;display:flex;flex-direction:column;gap:6px;flex:1}
+.tool-lines li{font-size:12px;color:#4a5568;padding-left:12px;border-left:2px solid}
+.arch-diagram{margin:24px 40px 0;flex:1;display:flex;flex-direction:column;gap:10px}
+.arch-layer{display:flex;align-items:center;gap:16px}
+.arch-layer-label{width:100px;font-size:11px;color:#2d3748;letter-spacing:2px;text-align:right;flex-shrink:0}
+.arch-box{flex:1;border-radius:12px;padding:14px 24px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;border:1px solid}
+.arch-agent-row{display:flex;gap:16px;flex:1}
+.arch-agent{flex:1;border-radius:12px;padding:16px 20px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:6px}
+.arch-agent .name{font-size:15px;font-weight:700}
+.arch-agent .role{font-size:12px;color:#64748b}
+.arch-tools-row{display:flex;gap:12px;flex:1}
+.arch-tool{flex:1;border-radius:10px;padding:12px 16px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02)}
+.arch-tool .tname{font-size:13px;font-weight:600;margin-bottom:4px}
+.arch-tool .tdesc{font-size:11px;color:#4a5568}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.slide.active>*{animation:fadeIn 0.5s ease both}
+.slide.active>*:nth-child(2){animation-delay:0.1s}
+.slide.active>*:nth-child(3){animation-delay:0.2s}
+.slide.active>*:nth-child(4){animation-delay:0.3s}
+.slide.active>*:nth-child(5){animation-delay:0.4s}
+.nav{position:fixed;bottom:24px;right:24px;display:flex;gap:8px;z-index:999}
+.nav button{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#64748b;font-size:16px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s}
+.nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#00D4FF,#7C3AED);transition:width 0.3s;z-index:999}
+#s1{justify-content:center;align-items:center;text-align:center;background:radial-gradient(ellipse 600px 400px at 75% 60%,rgba(0,80,180,0.18) 0%,transparent 70%),radial-gradient(ellipse 500px 500px at 20% 80%,rgba(60,0,120,0.15) 0%,transparent 60%),#06080f}
+#s1 .logo-ring{width:120px;height:120px;border-radius:50%;background:conic-gradient(from 0deg,#00D4FF,#7C3AED,#10B981,#00D4FF);padding:3px;margin-bottom:32px;animation:spin 8s linear infinite}
+#s1 .logo-ring-inner{width:100%;height:100%;border-radius:50%;background:#06080f;display:flex;align-items:center;justify-content:center;font-size:52px}
+#s1 h1{font-size:72px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:16px;text-shadow:0 0 60px rgba(0,212,255,0.3)}
+#s1 .tagline{font-size:32px;color:#00D4FF;font-weight:600;margin-bottom:20px;letter-spacing:-0.5px}
+#s1 .desc{font-size:16px;color:#64748b;margin-bottom:40px;letter-spacing:1px}
+#s1 .tags{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+#s1 .tag{padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid}
+#s1 .deco-l{position:absolute;left:0;top:0;width:6px;height:100%}
+#s1 .deco-r{position:absolute;right:0;top:0;width:6px;height:100%}
+#s7{justify-content:center;align-items:center;text-align:center;background:radial-gradient(ellipse 700px 500px at 50% 40%,rgba(0,80,180,0.2) 0%,transparent 70%),#06080f}
+#s7 h1{font-size:54px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:16px}
+#s7 .sub{font-size:22px;color:#00D4FF;margin-bottom:40px}
+#s7 .links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+#s7 .link-btn{padding:14px 32px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform 0.2s}
+#s7 .link-btn:hover{transform:translateY(-3px)}
+#s7 .footer{font-size:12px;color:#2d3748;margin-top:40px}
+#s5 .tl-axis{height:3px;background:linear-gradient(90deg,#00D4FF,#7C3AED,#10B981);border-radius:2px;margin:120px 0 0;position:relative}
+#s5 .tl-node{position:absolute;top:-14px;width:28px;height:28px;border-radius:50%;border:3px solid;background:#06080f;transform:translateX(-50%)}
+#s5 .tl-axis-wrap{padding:0 60px;margin-top:24px}
+@media print{.slide{display:flex!important;page-break-after:always;position:relative;height:100vh;width:100vw}.nav,.progress{display:none!important}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="slides">
+
+<!-- SLIDE 1: 封面 -->
+<div class="slide bg-dark active" id="s1">
+  <div class="deco-l" style="background:linear-gradient(180deg,#00D4FF,transparent)"></div>
+  <div class="deco-r" style="background:linear-gradient(180deg,#7C3AED,transparent)"></div>
+  <div class="logo-ring"><div class="logo-ring-inner">🚀</div></div>
+  <h1>OpenClaw</h1>
+  <div class="tagline">多 Agent AI 助手平台</div>
+  <div class="desc">多渠道接入 · 智能任务流 · 持久知识库 · 企业级安全</div>
+  <div class="tags">
+    <span class="tag" style="color:#00D4FF;border-color:rgba(0,212,255,0.4)">v4.2</span>
+    <span class="tag" style="color:#7C3AED;border-color:rgba(124,58,237,0.4)">多 Agent</span>
+    <span class="tag" style="color:#10B981;border-color:rgba(16,185,129,0.4)">Task Flow</span>
+    <span class="tag" style="color:#F59E0B;border-color:rgba(245,158,11,0.4)">安全加固</span>
+  </div>
+  <div class="pagenum">01 / 07</div>
+</div>
+
+<!-- SLIDE 2: 什么是 OpenClaw -->
+<div class="slide bg-dark grid-bg" id="s2">
+  <div class="topbar">
+    <div class="topbar-accent" style="background:#00D4FF"></div>
+    <h1>什么是 OpenClaw？</h1>
+    <span class="sub">What is OpenClaw</span>
+  </div>
+  <div class="deco-line" style="--c1:#00D4FF"></div>
+  <div class="def-box">
+    OpenClaw 是一个<strong style="color:#fff">生产级的多 Agent AI 协作平台</strong>。一个实例支持多个 AI Agent 协同工作，每个 Agent 拥有独立的人设、技能与工作区。通过灵活的工具链集成和持久化知识库，实现<strong style="color:#fff">跨渠道、跨任务、跨会话</strong>的智能协作。
+  </div>
+  <div class="tri-cards">
+    <div class="tri-card">
+      <div class="card-glow" style="background:#00D4FF"></div>
+      <div class="icon-box" style="background:rgba(0,212,255,0.15);color:#00D4FF">🤖</div>
+      <h3 style="color:#00D4FF">多 Agent 系统</h3>
+      <p>多个 AI Agent 各司其职、协同作战，通过 binding 配置区分不同 Agent 的能力边界与专业领域。</p>
+    </div>
+    <div class="tri-card">
+      <div class="card-glow" style="background:#7C3AED"></div>
+      <div class="icon-box" style="background:rgba(124,58,237,0.15);color:#7C3AED">⚡</div>
+      <h3 style="color:#7C3AED">智能任务流</h3>
+      <p>SQLite 持久化的任务账本，48 小时超长待机，统一调度 ACP 任务、Cron 定时任务与子 Agent。</p>
+    </div>
+    <div class="tri-card">
+      <div class="card-glow" style="background:#10B981"></div>
+      <div class="icon-box" style="background:rgba(16,185,129,0.15);color:#10B981">🧠</div>
+      <h3 style="color:#10B981">持久知识库</h3>
+      <p>Karpathy 模式的四阶段循环：Ingest → Compile → Query → Lint，知识编译一次，持续复利。</p>
+    </div>
+  </div>
+  <div class="bottom-info">docs.openclaw.ai · clawhub.ai · openclawmp.cc</div>
+  <div class="pagenum">02 / 07</div>
+</div>
+
+<!-- SLIDE 3: 系统架构 -->
+<div class="slide bg-dark grid-bg" id="s3">
+  <div class="topbar">
+    <div class="topbar-accent" style="background:#7C3AED"></div>
+    <h1>系统架构</h1>
+    <span class="sub">Architecture</span>
+  </div>
+  <div class="deco-line" style="--c1:#7C3AED"></div>
+  <div class="arch-diagram">
+    <div class="arch-layer">
+      <div class="arch-layer-label">GATEWAY</div>
+      <div class="arch-box" style="background:rgba(0,80,180,0.2);border-color:rgba(0,212,255,0.3);color:#00D4FF">🌐 Gateway — WebSocket · HTTP · 任务调度</div>
+    </div>
+    <div class="arch-layer" style="padding-left:116px"><div style="font-size:14px;color:#7C3AED">▼</div></div>
+    <div class="arch-layer">
+      <div class="arch-layer-label">TASK FLOW</div>
+      <div class="arch-box" style="background:rgba(80,0,140,0.2);border-color:rgba(124,58,237,0.3);color:#7C3AED">⚙ Task Flow — SQLite 持久化 · /tasks · ACP Prompts</div>
+    </div>
+    <div class="arch-layer" style="padding-left:116px"><div style="font-size:14px;color:#10B981">▼</div></div>
+    <div class="arch-layer">
+      <div class="arch-layer-label">AGENTS</div>
+      <div class="arch-agent-row">
+        <div class="arch-agent" style="border-color:rgba(0,212,255,0.2)"><div class="name" style="color:#00D4FF">🚀 马斯克</div><div class="role">AI · LLM · 技术研究</div></div>
+        <div class="arch-agent" style="border-color:rgba(124,58,237,0.2)"><div class="name" style="color:#7C3AED">📊 巴菲特</div><div class="role">金融 · 股票 · 数据分析</div></div>
+        <div class="arch-agent" style="border-color:rgba(16,185,129,0.2)"><div class="name" style="color:#10B981">✍️ 希文</div><div class="role">政务 · 公文 · 文字秘书</div></div>
+      </div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-label">SKILLS</div>
+      <div class="arch-box" style="background:rgba(20,30,50,0.8);border-color:rgba(100,116,139,0.2);color:#64748b">📦 Skills · Plugins · Triggers · Experiences · Channel Integrations</div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-label">TOOLS</div>
+      <div class="arch-tools-row">
+        <div class="arch-tool" style="border-color:rgba(0,212,255,0.15)"><div class="tname" style="color:#00D4FF">📄 飞书</div><div class="tdesc">文档 · 云盘 · 知识库 · 多维表格</div></div>
+        <div class="arch-tool" style="border-color:rgba(124,58,237,0.15)"><div class="tname" style="color:#7C3AED">🌐 网页</div><div class="tdesc">搜索 · 抓取 · Tavily · Firecrawl</div></div>
+        <div class="arch-tool" style="border-color:rgba(16,185,129,0.15)"><div class="tname" style="color:#10B981">📊 数据</div><div class="tdesc">Excel · Word · PDF · 图片处理</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-info">v3.22+: 48h 超长待机 · v4.2: Task Flow 重构 + 安全加固</div>
+  <div class="pagenum">03 / 07</div>
+</div>
+
+<!-- SLIDE 4: 核心功能 -->
+<div class="slide bg-dark grid-bg" id="s4">
+  <div class="topbar">
+    <div class="topbar-accent" style="background:#F59E0B"></div>
+    <h1>核心功能详解</h1>
+    <span class="sub">Core Features</span>
+  </div>
+  <div class="deco-line" style="--c1:#F59E0B"></div>
+  <div class="feat-grid">
+    <div class="feat-card" style="border-color:rgba(0,212,255,0.15)">
+      <div class="feat-header">
+        <div class="feat-icon" style="background:rgba(0,212,255,0.15)">⚡</div>
+        <div class="feat-title"><h3 style="color:#00D4FF">Task Flow 任务流</h3><span>SQLite 持久化 · 48h 超长待机</span></div>
+      </div>
+      <ul class="feat-points">
+        <li>SQLite 持久化状态 + 修订版追踪</li>
+        <li>/tasks 命令实时查看所有后台任务</li>
+        <li>ACP 任务 + Cron + 子 Agent 统一管理</li>
+        <li>Sticky Cancel Intent · 阻塞原因可见</li>
+        <li>api.runtime.taskFlow 插件开发接口</li>
+      </ul>
+    </div>
+    <div class="feat-card" style="border-color:rgba(124,58,237,0.15)">
+      <div class="feat-header">
+        <div class="feat-icon" style="background:rgba(124,58,237,0.15)">🧠</div>
+        <div class="feat-title"><h3 style="color:#7C3AED">知识库 Karpathy 模式</h3><span>Ingest → Compile → Query → Lint</span></div>
+      </div>
+      <ul class="feat-points">
+        <li>Wiki 双向链接，知识编译一次持续复用</li>
+        <li>PDF 读取（pdfplumber）+ Markdown 编写</li>
+        <li>PDF 导出（reportlab）+ PPT 生成</li>
+        <li>健康检查脚本：死链接 + 孤立文章</li>
+        <li>可配合 Obsidian / Dataview 使用</li>
+      </ul>
+    </div>
+    <div class="feat-card" style="border-color:rgba(16,185,129,0.15)">
+      <div class="feat-header">
+        <div class="feat-icon" style="background:rgba(16,185,129,0.15)">🔗</div>
+        <div class="feat-title"><h3 style="color:#10B981">多渠道接入</h3><span>全平台覆盖 · 语音唤醒</span></div>
+      </div>
+      <ul class="feat-points">
+        <li>飞书 / Telegram / Discord / Signal / Matrix</li>
+        <li>LINE · QQ Bot · Android · macOS</li>
+        <li>Voice Wake 语音唤醒（macOS）</li>
+        <li>Google Assistant App Actions（Android）</li>
+        <li>WhatsApp emoji 反应 · Telegram 审批流</li>
+      </ul>
+    </div>
+    <div class="feat-card" style="border-color:rgba(245,158,11,0.15)">
+      <div class="feat-header">
+        <div class="feat-icon" style="background:rgba(245,158,11,0.15)">🔒</div>
+        <div class="feat-title"><h3 style="color:#F59E0B">安全加固</h3><span>企业级安全 · 危险代码扫描</span></div>
+      </div>
+      <ul class="feat-points">
+        <li>插件危险代码扫描（静态分析）</li>
+        <li>节点配对 ≠ 命令权限（防提权攻击）</li>
+        <li>Shell 环境变量严格过滤</li>
+        <li>BCE Auth v1 时间安全比较</li>
+        <li>SSRF 防护 + 传输层 TLS 集中化</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pagenum">04 / 07</div>
+</div>
+
+<!-- SLIDE 5: 版本时间线 -->
+<div class="slide bg-dark grid-bg" id="s5">
+  <div class="topbar">
+    <div class="topbar-accent" style="background:#7C3AED"></div>
+    <h1>版本演进</h1>
+    <span class="sub">Version History</span>
+  </div>
+  <div class="deco-line" style="--c1:#7C3AED"></div>
+  <div class="tl-axis-wrap" style="margin:24px 60px 0">
+    <div style="display:flex;justify-content:space-between;position:relative">
+      <div style="position:absolute;top:14px;left:0;right:0;height:3px;background:linear-gradient(90deg,#00D4FF,#7C3AED,#10B981);border-radius:2px"></div>
+      <div style="position:relative;text-align:center;flex:1">
+        <div style="width:28px;height:28px;border-radius:50%;border:3px solid #00D4FF;background:#06080f;margin:0 auto 16px;box-shadow:0 0 20px rgba(0,212,255,0.4)"></div>
+      </div>
+      <div style="position:relative;text-align:center;flex:1">
+        <div style="width:28px;height:28px;border-radius:50%;border:3px solid #7C3AED;background:#06080f;margin:0 auto 16px;box-shadow:0 0 20px rgba(124,58,237,0.4)"></div>
+      </div>
+      <div style="position:relative;text-align:center;flex:1">
+        <div style="width:28px;height:28px;border-radius:50%;border:3px solid #10B981;background:#06080f;margin:0 auto 16px;box-shadow:0 0 20px rgba(16,185,129,0.4)"></div>
+      </div>
+    </div>
+  </div>
+  <div class="tl-cards" style="margin:20px 60px 0">
+    <div class="tl-card" style="border-color:rgba(0,212,255,0.15)">
+      <span class="tl-ver" style="background:rgba(0,212,255,0.15);color:#00D4FF">v3.22</span>
+      <div class="tl-date" style="color:#00D4FF">2026.3</div>
+      <div class="tl-title" style="color:#fff">超时革命</div>
+      <ul class="tl-items" style="border-color:#00D4FF">
+        <li>默认 Agent 超时 10min → 48h</li>
+        <li>/btw 旁支指令</li>
+        <li>Per-Agent 独立推理配置</li>
+        <li>语音 Webhook 加固</li>
+      </ul>
+    </div>
+    <div class="tl-card" style="border-color:rgba(124,58,237,0.15)">
+      <span class="tl-ver" style="background:rgba(124,58,237,0.15);color:#7C3AED">v4.1</span>
+      <div class="tl-date" style="color:#7C3AED">2026.4.1</div>
+      <div class="tl-title" style="color:#fff">安全元年</div>
+      <ul class="tl-items" style="border-color:#7C3AED">
+        <li>插件危险代码扫描</li>
+        <li>节点配对权限分离</li>
+        <li>Shell 环境变量过滤</li>
+        <li>网关认证集中化</li>
+      </ul>
+    </div>
+    <div class="tl-card" style="border-color:rgba(16,185,129,0.15)">
+      <span class="tl-ver" style="background:rgba(16,185,129,0.15);color:#10B981">v4.2</span>
+      <div class="tl-date" style="color:#10B981">2026.4.2</div>
+      <div class="tl-title" style="color:#fff">任务流重构</div>
+      <ul class="tl-items" style="border-color:#10B981">
+        <li>Task Flow SQLite 统一账本</li>
+        <li>/tasks 命令 · 阻塞可见</li>
+        <li>Breaking Changes 迁移</li>
+        <li>各平台更新</li>
+      </ul>
+    </div>
+  </div>
+  <div class="bottom-info">升级注意：openclaw doctor --fix · 回退方案：v2026.3.13</div>
+  <div class="pagenum">05 / 07</div>
+</div>
+
+<!-- SLIDE 6: 工具链 -->
+<div class="slide bg-dark grid-bg" id="s6">
+  <div class="topbar">
+    <div class="topbar-accent" style="background:#10B981"></div>
+    <h1>配套工具链</h1>
+    <span class="sub">Knowledge Base Tools</span>
+  </div>
+  <div class="deco-line" style="--c1:#10B981"></div>
+  <div class="tools-grid">
+    <div class="tool-card" style="border-color:rgba(0,212,255,0.15)">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(0,212,255,0.15);color:#00D4FF">📄</div>
+        <div><div class="tool-name" style="color:#00D4FF">pdf-ingest.py</div><div class="tool-desc">PDF 论文提取</div></div>
+      </div>
+      <ul class="tool-lines" style="border-color:#00D4FF">
+        <li>pdfplumber + pymupdf 双引擎自动选择</li>
+        <li>arxiv URL / 本地 PDF 自动缓存</li>
+        <li>生成 frontmatter · Markdown 输出</li>
+      </ul>
+    </div>
+    <div class="tool-card" style="border-color:rgba(124,58,237,0.15)">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(124,58,237,0.15);color:#7C3AED">📑</div>
+        <div><div class="tool-name" style="color:#7C3AED">md-to-pdf.py</div><div class="tool-desc">Markdown → PDF</div></div>
+      </div>
+      <ul class="tool-lines" style="border-color:#7C3AED">
+        <li>reportlab 渲染引擎</li>
+        <li>三主题：Light / Dark / Sepia</li>
+        <li>封面 + 页脚 + 代码高亮</li>
+      </ul>
+    </div>
+    <div class="tool-card" style="border-color:rgba(245,158,11,0.15)">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(245,158,11,0.15);color:#F59E0B">🤖</div>
+        <div><div class="tool-name" style="color:#F59E0B">generate_ppt.py</div><div class="tool-desc">AI PPT 生成</div></div>
+      </div>
+      <ul class="tool-lines" style="border-color:#F59E0B">
+        <li>百度千帆 ai_ppt API · 100+ 模板</li>
+        <li>智能大纲生成 + CDN 自动下载</li>
+        <li>支持 --tpl_id 指定模板</li>
+      </ul>
+    </div>
+    <div class="tool-card" style="border-color:rgba(16,185,129,0.15)">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:rgba(16,185,129,0.15);color:#10B981">🔍</div>
+        <div><div class="tool-name" style="color:#10B981">lint-wiki.py</div><div class="tool-desc">知识库健康检查</div></div>
+      </div>
+      <ul class="tool-lines" style="border-color:#10B981">
+        <li>死链接检测（wikilink 验证）</li>
+        <li>孤立文章追踪（无入站链接）</li>
+        <li>来源文件完整性检查</li>
+      </ul>
+    </div>
+  </div>
+  <div class="bottom-info">Generated by 马斯克知识库 AI</div>
+  <div class="pagenum">06 / 07</div>
+</div>
+
+<!-- SLIDE 7: 结尾 -->
+<div class="slide" id="s7">
+  <h1>🚀 Start Building</h1>
+  <div class="sub">多 Agent 协同 · 智能任务流 · 持久知识库 · 企业级安全
+  </div>
+  <div class="links">
+    <a class="link-btn" style="background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:#00D4FF" href="https://docs.openclaw.ai" target="_blank">
+      📖 官方文档<br><span style="font-size:11px;opacity:0.7">docs.openclaw.ai</span>
+    </a>
+    <a class="link-btn" style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#7C3AED" href="https://discord.gg/openclaw" target="_blank">
+      💬 Discord 社区<br><span style="font-size:11px;opacity:0.7">discord.gg/openclaw</span>
+    </a>
+    <a class="link-btn" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#10B981" href="https://clawhub.ai" target="_blank">
+      📦 插件市场<br><span style="font-size:11px;opacity:0.7">clawhub.ai</span>
+    </a>
+    <a class="link-btn" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#F59E0B" href="https://openclawmp.cc" target="_blank">
+      🐟 水产市场<br><span style="font-size:11px;opacity:0.7">openclawmp.cc</span>
+    </a>
+  </div>
+  <div class="footer">OpenClaw v4.2 · Built by OpenClaw Community · 2026<br>Generated by 马斯克知识库 AI</div>
+  <div class="pagenum">07 / 07</div>
+</div>
+
+</div><!-- /slides -->
+
+<!-- 导航按钮 -->
+<div class="nav">
+  <button onclick="prevSlide()">◀</button>
+  <button onclick="nextSlide()">▶</button>
+</div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide');
+  var current=0;
+  var total=slides.length;
+  function show(idx){
+    if(idx<0)idx=0;if(idx>=total)idx=total-1;
+    slides[current].classList.remove('active');
+    current=idx;
+    slides[current].classList.add('active');
+    document.getElementById('progress').style.width=((current+1)/total*100)+'%';
+  }
+  window.nextSlide=function(){show(current+1);};
+  window.prevSlide=function(){show(current-1);};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')nextSlide();
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')prevSlide();
+    if(e.key==='Home')show(0);
+    if(e.key==='End')show(total-1);
+  });
+  // 触屏支持
+  var startX=0;
+  document.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;});
+  document.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-startX;
+    if(Math.abs(dx)>50){dx>0?prevSlide():nextSlide();}
+  });
+  show(0);
+})();
+</script>
+</body>
+</html>
